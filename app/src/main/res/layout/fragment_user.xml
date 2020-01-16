@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+
+    <TextView
+        android:id="@+id/textPosition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="TextView"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/textDucks"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textDucks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="TextView"
+        android:textSize="15sp"
+        android:textColor="@color/colorPrimary"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textPosition"
+        app:layout_constraintEnd_toStartOf="@+id/textNick"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textPosition"
+        app:layout_constraintTop_toTopOf="@+id/textPosition" />
+
+    <TextView
+        android:id="@+id/textNick"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:textSize="15sp"
+        android:text="TextView"
+        android:textColor="@color/colorPrimary"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/textDucks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textDucks"
+        app:layout_constraintTop_toTopOf="@+id/textDucks" />
+</LinearLayout>
