@@ -6,11 +6,11 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textGameOver"
+        android:id="@+id/textRestartGameTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        android:text="Game Over"
+        android:text="Restart Game"
         android:textAlignment="center"
         android:padding="10dp"
         android:textSize="40sp"
@@ -22,24 +22,16 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textResultGO"
+            android:id="@+id/textRestartGameSubtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:textColor="@color/colorPrimary"
-            android:text=""
+            android:text="Do you want to restart the game?"
             android:textAlignment="center"
             android:padding="10dp"
             android:textSize="20sp"
             />
-
-        <ImageView
-            android:id="@+id/dialogButtonShare"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/share" />
 
     </LinearLayout>
 
@@ -50,7 +42,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/dialogButtonReiniciar"
+            android:id="@+id/dialogButtonRestart"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
@@ -61,13 +53,13 @@
             android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/dialogButtonGoHome"
+            android:id="@+id/dialogButtonCancel"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:backgroundTint="@color/colorPrimary"
-            android:text="Go Home"
+            android:text="Cancel"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
 

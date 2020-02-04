@@ -1,8 +1,14 @@
 package es.jesusgarce.duckhunt.ui;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import es.jesusgarce.duckhunt.R;
 import es.jesusgarce.duckhunt.common.Constants;
+import es.jesusgarce.duckhunt.models.Duck;
+import es.jesusgarce.duckhunt.models.User;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -11,60 +17,173 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
-    ImageView duckLeft;
-    ImageView duckRight;
+
     TextView nickText;
     TextView counterText;
     TextView timeText;
+    TextView bestScoreText;
+    TextView counterTextNew;
+    ImageView btnReiniciar;
+
+    ConstraintLayout layout;
+
     int counter = 0;
     int widthScreen;
     int heightScreen;
     Random random;
     boolean gameOver = false;
+
     String idUser;
     String nick;
+    FirebaseUser user;
     FirebaseFirestore db;
-    ObjectAnimator animationLeft;
-    ObjectAnimator animationRight;
-    int duckChosed = 1;
-    boolean isLeft = true;
+    User player;
+    String uid;
+    String bestScore;
+    FirebaseAuth firebaseAuth;
+
+    LinkedList<Duck> ducks;
+    Duck duck;
+    int duckId;
+
+    CountDownTimer generatorDucksTimer;
+    CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        uid = user.getUid();
         db = FirebaseFirestore.getInstance();
 
-        initViewComponents();
-        events();
         initScreen();
-        moveDuckLeft();
-        moveDuckRight();
+        initViewComponents();
+        generateDucks();
         initCountDown();
+        chargeUser();
     }
+
+    private void generateDucks() {
+        ducks = new LinkedList<>();
+        duckId = 0;
+
+        generatorDucksTimer = new CountDownTimer(60000, 823){
+
+            @Override
+            public void onTick(long l) {
+                duck = new Duck(duckId);
+                duck.generateImageView(createDuckView(duck), widthScreen, heightScreen);
+                duckId++;
+                duck.getView().setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onClick(View view) {
+                        if (!gameOver) {
+                            Optional<Duck> duckListOptional = ducks.stream().filter(d -> d.getView().equals(view)).findFirst();
+                            if (duckListOptional.isPresent()) {
+                                Duck duckList = duckListOptional.get();
+                                int value = duckList.duckValue();
+                                counter = counter + value;
+                                counterText.setText(String.valueOf(counter));
+                                counterTextNew.setText("+" + String.valueOf(value));
+                                counterTextNew.setVisibility(View.VISIBLE);
+
+
+                                drawHuntedDuck(duckList);
+
+                                new Handler().postDelayed(() -> {
+                                    duckList.duckHunted();
+                                    counterTextNew.setVisibility(View.INVISIBLE);
+                                    layout.removeView(duckList.getView());
+                                    ducks.remove(duckList);
+                                }, 100);
+                            }
+                        }
+                    }
+                });
+                duck.startDuck();
+                ducks.addLast(duck);
+
+            }
+
+            @Override
+            public void onFinish() {
+                ducks = new LinkedList<>();
+            }
+        };
+
+        generatorDucksTimer.start();
+
+    }
+
+    private ImageView createDuckView(Duck duck) {
+        ImageView iv = new ImageView(getApplicationContext());
+        switch (duck.getType()){
+            case 2:
+                if (duck.isLeft())
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_left_2));
+                else
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_2));
+                break;
+            case 3:
+                if (duck.isLeft())
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_left_3));
+                else
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_3));
+                break;
+            default:
+                if (duck.isLeft())
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_left_1));
+                else
+                    iv.setImageDrawable(getDrawable(R.drawable.duck_1));
+        }
+        final float scale = getResources().getDisplayMetrics().density;
+        int dpWidthInPx  = (int) (80 * scale);
+        int dpHeightInPx = (int) (80 * scale);
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(dpWidthInPx, dpHeightInPx);
+        iv.setLayoutParams(lp);
+        layout.addView(iv);
+        return iv;
+    }
+
 
     @Override
     public void onBackPressed() {
-        finish();
+        Toast.makeText(GameActivity.this, "Sorry, you can't do that, you have to finish the game",Toast.LENGTH_SHORT).show();
     }
 
     private void initCountDown() {
-        new CountDownTimer(60000, 1000){
+        timer = new CountDownTimer(60000, 1000){
             @Override
             public void onTick(long l) {
                 long remainingSeconds = l / 1000;
@@ -78,7 +197,9 @@ public class GameActivity extends AppCompatActivity {
                 saveResultOnFirestore();
                 showDialogGameOver();
             }
-        }.start();
+        };
+
+        timer.start();
     }
 
     private void saveResultOnFirestore() {
@@ -93,14 +214,30 @@ public class GameActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_end);
         dialog.setTitle("GAME OVER");
         dialog.setCancelable(false);
+        actualizarPuntuacion(counter);
+        deleteDucks();
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "pixel.ttf");
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
 
         TextView textGameOver = dialog.findViewById(R.id.textGameOver);
         TextView textResult = dialog.findViewById(R.id.textResultGO);
         textResult.setText("You have hunted "+counter + " ducks");
         textResult.setTypeface(typeface);
         textGameOver.setTypeface(typeface);
+
+        ImageView dialogShare = dialog.findViewById(R.id.dialogButtonShare);
+        dialogShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hi guys! I've got "+counter+ " ducks, can you be better than me? Try to improve that. Play Duck Hunt! ");
+                sendIntent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(sendIntent, null);
+                startActivity(shareIntent);
+            }
+        });
 
         Button dialogReiniciar = dialog.findViewById(R.id.dialogButtonReiniciar);
         dialogReiniciar.setTypeface(typeface);
@@ -111,25 +248,34 @@ public class GameActivity extends AppCompatActivity {
                         counter = 0;
                         counterText.setText("0");
                         gameOver = false;
+                        generateDucks();
                         initCountDown();
                         dialog.dismiss();
                     }
         });
 
-        Button dialogVerRanking = dialog.findViewById(R.id.dialogButtonRanking);
+        Button dialogVerRanking = dialog.findViewById(R.id.dialogButtonGoHome);
         dialogVerRanking.setTypeface(typeface);
         dialogVerRanking.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
-                        Intent i = new Intent(GameActivity.this, RankingActivity.class);
+                        Intent i = new Intent(GameActivity.this, MenuActivity.class);
                         startActivity(i);
                         finish();
                     }
                 });
 
         dialog.show();
+    }
+
+    private void deleteDucks() {
+        for (Duck duck : ducks){
+            duck.duckHunted();
+            layout.removeView(duck.getView());
+        }
+        ducks = new LinkedList<>();
     }
 
     private void initScreen() {
@@ -143,191 +289,160 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void initViewComponents() {
-        duckLeft = findViewById(R.id.duckLeft);
-        duckRight = findViewById(R.id.duckRight);
         nickText = findViewById(R.id.nickText);
         counterText = findViewById(R.id.counterText);
         timeText = findViewById(R.id.timeText);
+        bestScoreText = findViewById(R.id.txtBestScoreGame);
+        counterTextNew = findViewById(R.id.counterTextNew);
+        layout = findViewById(R.id.layoutGame);
+        btnReiniciar = findViewById(R.id.btnReiniciar);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "pixel.ttf");
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
         counterText.setTypeface(typeface);
         timeText.setTypeface(typeface);
         nickText.setTypeface(typeface);
+        bestScoreText.setTypeface(typeface);
+        counterTextNew.setTypeface(typeface);
 
         Bundle extras = getIntent().getExtras();
         nick = extras.getString(Constants.EXTRA_NICK);
         idUser = extras.getString(Constants.EXTRA_ID);
+        bestScore = extras.getString(Constants.EXTRA_BEST_SCORE);
+
         nickText.setText(nick);
-    }
+        bestScoreText.setText("Best Score: "+bestScore);
+        counterTextNew.setVisibility(View.INVISIBLE);
 
-    private void events() {
-        duckLeft.setOnClickListener(new View.OnClickListener() {
+        btnReiniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!gameOver) {
-                    counter++;
-                    counterText.setText(String.valueOf(counter));
-                    isLeft = true;
-
-                    drawHuntedDuck(isLeft);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            animationLeft.end();
-                            duckChosed = random.nextInt((4 - 1) + 1);
-                            drawNewDuck(isLeft);
-                            animationLeft.start();
-                        }
-                    }, 50);
-                }
+                showDialogRestart();
             }
         });
-
-        duckRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!gameOver) {
-                    counter++;
-                    counterText.setText(String.valueOf(counter));
-                    isLeft = false;
-
-                    drawHuntedDuck(false);
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            animationRight.end();
-                            duckChosed = random.nextInt((4 - 1) + 1);
-                            drawNewDuck(isLeft);
-                            animationRight.start();
-                        }
-                    }, 50);
-                }
-            }
-        });
-    }
-
-    private void moveDuckLeft(){
-        int maxWidth = widthScreen;
-
-        duckLeft.setX(-duckLeft.getWidth());
-        animationLeft = ObjectAnimator.ofFloat(duckLeft, "translationX",  maxWidth, -220f);
-        animationLeft.setDuration(981);
-        animationLeft.setRepeatCount(ValueAnimator.INFINITE);
-        animationLeft.setRepeatMode(ValueAnimator.RESTART);
-        animationLeft.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                int min = 0;
-                int maxHeight = heightScreen - duckLeft.getHeight();
-                int randomHeight = random.nextInt((maxHeight - min) + 1);
-                duckLeft.setY(randomHeight);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-                int min = 0;
-                int maxHeight = heightScreen - duckLeft.getHeight();
-                int randomHeight = random.nextInt((maxHeight - min) + 1);
-                duckLeft.setY(randomHeight);
-            }
-        });
-        animationLeft.start();
 
     }
 
-    private void moveDuckRight(){
-        int maxWidth = widthScreen + duckRight.getWidth();
+    private void showDialogRestart(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_restart);
+        dialog.setCancelable(false);
 
-        duckRight.setX(+duckRight.getWidth());
-        animationRight = ObjectAnimator.ofFloat(duckRight, "translationX",  -90f, maxWidth);
-        animationRight.setDuration(1016);
-        animationRight.setRepeatCount(ValueAnimator.INFINITE);
-        animationRight.setRepeatMode(ValueAnimator.RESTART);
-        animationRight.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
 
-            }
+        TextView textTitle = dialog.findViewById(R.id.textRestartGameTitle);
+        TextView textSubtitle = dialog.findViewById(R.id.textRestartGameSubtitle);
+        textTitle.setTypeface(typeface);
+        textSubtitle.setTypeface(typeface);
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                int min = 0;
-                int maxHeight = heightScreen - duckRight.getHeight();
-                int randomHeight = random.nextInt((maxHeight - min) + 1);
-                duckRight.setY(randomHeight);
-            }
+        Button btnRestart = dialog.findViewById(R.id.dialogButtonRestart);
+        btnRestart.setTypeface(typeface);
+        btnRestart.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        counter = 0;
+                        counterText.setText("0");
+                        gameOver = false;
+                        generatorDucksTimer.cancel();
+                        deleteDucks();
+                        generateDucks();
+                        timer.cancel();
+                        initCountDown();
+                        dialog.dismiss();
+                    }
+                });
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+        Button btnCancelar = dialog.findViewById(R.id.dialogButtonCancel);
+        btnCancelar.setTypeface(typeface);
+        btnCancelar.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
 
-            }
+        dialog.show();
+    }
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-                int min = 0;
-                int maxHeight = heightScreen - duckRight.getHeight();
-                int randomHeight = random.nextInt((maxHeight - min) + 1);
-                duckRight.setY(randomHeight);
-            }
-        });
-        animationRight.start();
+    private void chargeUser() {
+        db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        player = documentSnapshot.toObject(User.class);
+                    }
+                });
+    }
+
+    private void actualizarPuntuacion(int puntosConseguidos) {
+        if (player.getDucks() < puntosConseguidos)
+            player.setDucks(puntosConseguidos);
+
+        player.setGamesPlayed(player.getGamesPlayed()+1);
+
+        db.collection("users")
+                .document(uid)
+                .set(player)
+                .addOnSuccessListener(GameActivity.this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(GameActivity.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(GameActivity.this, "Ups, something bad happened, we can't save your last game",Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
-    private void drawNewDuck(boolean isLeft){
-        switch (duckChosed){
+    private void drawNewDuck(Duck duck){
+        switch (duck.getType()){
             case 2:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_left_2);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_left_2);
                 else
-                    duckRight.setImageResource(R.drawable.duck_2);
+                    duck.getView().setImageResource(R.drawable.duck_2);
                 break;
             case 3:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_left_3);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_left_3);
                 else
-                    duckRight.setImageResource(R.drawable.duck_3);
+                    duck.getView().setImageResource(R.drawable.duck_3);
                 break;
             default:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_left_1);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_left_1);
                 else
-                    duckRight.setImageResource(R.drawable.duck_1);
+                    duck.getView().setImageResource(R.drawable.duck_1);
         }
     }
 
-    private void drawHuntedDuck(boolean isLeft){
-        switch (duckChosed){
+    private void drawHuntedDuck(Duck duck){
+        switch (duck.getType()){
             case 2:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_hunted_2);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_hunted_2);
                 else
-                    duckRight.setImageResource(R.drawable.duck_hunted_2);
+                    duck.getView().setImageResource(R.drawable.duck_hunted_2);
                 break;
             case 3:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_hunted_3);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_hunted_3);
                 else
-                    duckRight.setImageResource(R.drawable.duck_hunted_3);
+                    duck.getView().setImageResource(R.drawable.duck_hunted_3);
                 break;
             default:
-                if (isLeft)
-                    duckLeft.setImageResource(R.drawable.duck_hunted_1);
+                if (duck.isLeft())
+                    duck.getView().setImageResource(R.drawable.duck_hunted_1);
                 else
-                    duckRight.setImageResource(R.drawable.duck_hunted_1);
+                    duck.getView().setImageResource(R.drawable.duck_hunted_1);
         }
     }
+
 
 }

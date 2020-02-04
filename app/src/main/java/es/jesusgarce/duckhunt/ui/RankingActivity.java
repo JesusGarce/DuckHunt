@@ -1,5 +1,6 @@
 package es.jesusgarce.duckhunt.ui;
 
+import android.app.Dialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -17,6 +18,7 @@ public class RankingActivity extends AppCompatActivity {
     TextView textPosition;
     TextView textDucks;
     TextView textNick;
+    Dialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,7 @@ public class RankingActivity extends AppCompatActivity {
         textDucks = findViewById(R.id.textDucksIndex);
         textNick = findViewById(R.id.textNickIndex);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "pixel.ttf");
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
         textPosition.setTypeface(typeface);
         textDucks.setTypeface(typeface);
         textNick.setTypeface(typeface);

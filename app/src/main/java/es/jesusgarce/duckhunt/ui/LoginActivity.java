@@ -1,115 +1,136 @@
 package es.jesusgarce.duckhunt.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import es.jesusgarce.duckhunt.R;
-import es.jesusgarce.duckhunt.common.Constants;
-import es.jesusgarce.duckhunt.models.User;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
-    EditText inputNick;
-    Button btnStart;
-    Button btnRanking;
-    String nick;
-    FirebaseFirestore db;
-    Dialog loadingDialog;
-    Context context;
+
+    private EditText etEmail, etPassword;
+    private Button btnLogin, btnRegistro;
+    private ScrollView formLogin;
+    private TextView pbLogin;
+    FirebaseAuth firebaseAuth;
+    String email, password;
+    boolean tryLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        context = this;
 
-        db = FirebaseFirestore.getInstance();
+        etEmail = findViewById(R.id.editEmail);
+        etPassword = findViewById(R.id.editPassword);
+        btnLogin = findViewById(R.id.buttonRegistro);
+        btnRegistro = findViewById(R.id.buttonRegistroLogin);
+        formLogin = findViewById(R.id.formLogin);
+        pbLogin = findViewById(R.id.loadingTextLogin);
 
-        inputNick = findViewById(R.id.inputNick);
-        btnStart = findViewById(R.id.buttonStart);
-        btnRanking = findViewById(R.id.buttonRanking);
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
+        etEmail.setTypeface(typeface);
+        etPassword.setTypeface(typeface);
+        btnLogin.setTypeface(typeface);
+        btnRegistro.setTypeface(typeface);
+        pbLogin.setTypeface(typeface);
 
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "pixel.ttf");
-        inputNick.setTypeface(typeface);
-        btnStart.setTypeface(typeface);
-        btnRanking.setTypeface(typeface);
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        btnStart.setOnClickListener(new View.OnClickListener(){
+        changeLoginFormVisibility(true);
+        events();
+    }
+
+    private void events() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                nick = inputNick.getText().toString();
+                email = etEmail.getText().toString();
+                password = etPassword.getText().toString();
 
-                if (nick.isEmpty()){
-                    inputNick.setError("You must write a nickname");
-                } else if (nick.length() < 3) {
-                    inputNick.setError("It's too short, you must use more than 3 characters");
-                } else if (nick.length() > 15) {
-                    inputNick.setError("It's too long, you must use less than 15 characters");
+                if (password.isEmpty()) {
+                    etPassword.setError("You must write a password");
+                } else if (email.isEmpty()) {
+                    etEmail.setError("You must write an e-mail");
+                } else {
+                    changeLoginFormVisibility(false);
+                    loginUser();
                 }
 
-                else {
-                    loadingDialog = new Dialog(context);
-                    loadingDialog.setContentView(R.layout.dialog_loading);
-
-                    TextView loading = loadingDialog.findViewById(R.id.loadingText);
-                    Typeface typeface = Typeface.createFromAsset(getAssets(), "pixel.ttf");
-                    loading.setTypeface(typeface);
-
-                    loadingDialog.setCancelable(false);
-                    loadingDialog.show();
-                    addNickAndStart();
-                }
             }
         });
 
-        btnRanking.setOnClickListener(new View.OnClickListener() {
+        btnRegistro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(LoginActivity.this, RankingActivity.class);
+                Intent i = new Intent(LoginActivity.this, RegistroActivity.class);
                 startActivity(i);
             }
         });
+
     }
 
-    private void addNickAndStart() {
-        db.collection("users").whereEqualTo("nick",nick)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    private void loginUser() {
+        firebaseAuth.signInWithEmailAndPassword(email,password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.size() > 0){
-                            inputNick.setError("This nickname isn't available");
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        tryLogin = true;
+                        if (task.isSuccessful()){
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            updateUI(user);
                         } else {
-                            addNickToFirestore();
+                            Log.w("JGS", "LogInError: "+task.getException());
+                            Toast.makeText(LoginActivity.this, "Ups! Your password isn't correct. Check it", Toast.LENGTH_LONG).show();
+                            updateUI(null);
                         }
                     }
                 });
     }
 
-    private void addNickToFirestore() {
-        db.collection("users")
-                .add(new User(nick,0))
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Intent i = new Intent(LoginActivity.this, GameActivity.class);
-                        i.putExtra(Constants.EXTRA_NICK,nick);
-                        i.putExtra(Constants.EXTRA_ID, documentReference.getId());
-                        loadingDialog.cancel();
-                        startActivity(i);
-                    }
-                });
+    private void updateUI(FirebaseUser user) {
+        if (user != null){
+            if (user.isEmailVerified()) {
+                Intent i = new Intent(LoginActivity.this, MenuActivity.class);
+                startActivity(i);
+            }
+            else {
+                user.sendEmailVerification();
+                Toast.makeText(LoginActivity.this, "You have to verify your e-mail. We have sent another verification. Please check your e-mail", Toast.LENGTH_LONG).show();
+                changeLoginFormVisibility(true);
+            }
+        } else {
+            changeLoginFormVisibility(true);
+            etEmail.requestFocus();
+        }
+    }
+
+    private void changeLoginFormVisibility(boolean showForm) {
+        pbLogin.setVisibility(showForm ? View.GONE : View.VISIBLE);
+        formLogin.setVisibility(showForm ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        updateUI(currentUser);
     }
 }

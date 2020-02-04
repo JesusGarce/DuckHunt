@@ -64,7 +64,7 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
             textDucks = view.findViewById(R.id.textDucks);
             textNick = view.findViewById(R.id.textNick);
 
-            Typeface typeface = Typeface.createFromAsset(view.getContext().getAssets(), "pixel.ttf");
+            Typeface typeface = Typeface.createFromAsset(view.getContext().getAssets(), "starseed.ttf");
             textPosition.setTypeface(typeface);
             textDucks.setTypeface(typeface);
             textNick.setTypeface(typeface);

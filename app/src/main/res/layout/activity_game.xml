@@ -5,16 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back_blue"
+    android:id="@+id/layoutGame"
     android:padding="16dp"
     tools:context=".ui.GameActivity">
-
-    <ImageView
-        android:id="@+id/duckLeft"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        app:srcCompat="@drawable/duck_left_3"
-        tools:layout_editor_absoluteX="201dp"
-        tools:layout_editor_absoluteY="365dp" />
 
     <ImageView
         android:id="@+id/counterView"
@@ -32,11 +25,28 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:text="0"
-        android:textSize="20sp"
-        android:textColor="@android:color/white"
+        android:textColor="#252525"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/counterView"
         app:layout_constraintStart_toEndOf="@+id/counterView"
         app:layout_constraintTop_toTopOf="@+id/counterView" />
+
+
+    <TextView
+        android:id="@+id/counterTextNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="0"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/counterView"
+        app:layout_constraintLeft_toLeftOf="@+id/counterText"
+        app:layout_constraintStart_toEndOf="@+id/counterView"
+        app:layout_constraintTop_toTopOf="@+id/counterView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/nickText"
@@ -46,7 +56,7 @@
         android:padding="5dp"
         android:text="TextView"
         android:textColor="@android:color/white"
-        android:textSize="15sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/timeView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,8 +69,8 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:text="60s"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
+        android:textColor="#252525"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/timeView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/timeView" />
@@ -75,12 +85,27 @@
         app:layout_constraintTop_toTopOf="@+id/counterView"
         app:srcCompat="@drawable/clock" />
 
+    <TextView
+        android:id="@+id/txtBestScoreGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorDark"
+        android:padding="5dp"
+        android:text="TextView"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageView
-        android:id="@+id/duckRight"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        app:srcCompat="@drawable/duck_1"
-        tools:layout_editor_absoluteX="86dp"
-        tools:layout_editor_absoluteY="195dp" />
+        android:id="@+id/btnReiniciar"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/restart"
+        app:layout_constraintBottom_toBottomOf="@+id/txtBestScoreGame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtBestScoreGame" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
