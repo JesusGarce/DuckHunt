@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
@@ -41,27 +42,35 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
+        <info.hoang8f.widget.FButton
             android:id="@+id/dialogButtonRestart"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/colorPrimary"
+            android:layout_margin="10dp"
             android:text="Restart"
             android:textSize="20sp"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            fbutton:buttonColor="@color/fbutton_default_color"
+            fbutton:shadowColor="@color/fbutton_default_shadow_color"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"/>
 
-        <Button
+        <info.hoang8f.widget.FButton
             android:id="@+id/dialogButtonCancel"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_marginTop="10dp"
+            android:layout_margin="10dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/colorPrimary"
             android:text="Cancel"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            fbutton:buttonColor="@color/fbutton_default_color"
+            fbutton:shadowColor="@color/fbutton_default_shadow_color"
+            fbutton:shadowEnabled="true"
+            fbutton:shadowHeight="5dp"
+            fbutton:cornerRadius="5dp"/>
 
     </LinearLayout>
 

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import es.jesusgarce.duckhunt.R;
 import es.jesusgarce.duckhunt.common.Constants;
 import es.jesusgarce.duckhunt.models.User;
+import info.hoang8f.widget.FButton;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -33,9 +34,9 @@ public class MenuActivity extends AppCompatActivity {
     TextView txtBestScore;
     TextView txtGamesPlayed;
     TextView txtLoadingMenu;
-    Button btnStart;
-    Button btnRanking;
-    Button btnLogout;
+    FButton btnStart;
+    FButton btnRanking;
+    FButton btnLogout;
     String nick;
     FirebaseAuth firebaseAuth;
     FirebaseFirestore db;
@@ -65,6 +66,8 @@ public class MenuActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.buttonStart);
         btnRanking = findViewById(R.id.buttonRanking);
         btnLogout = findViewById(R.id.buttonLogout);
+
+        btnLogout.setButtonColor(getResources().getColor(R.color.fbutton_secondary_color));
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
         inputNick.setTypeface(typeface);

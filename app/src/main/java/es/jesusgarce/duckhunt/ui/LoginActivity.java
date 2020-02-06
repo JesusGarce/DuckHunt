@@ -3,6 +3,7 @@ package es.jesusgarce.duckhunt.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import es.jesusgarce.duckhunt.R;
+import info.hoang8f.widget.FButton;
 
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -25,7 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
-    private Button btnLogin, btnRegistro;
+    private FButton btnLogin, btnRegistro;
     private ScrollView formLogin;
     private TextView pbLogin;
     FirebaseAuth firebaseAuth;
@@ -50,6 +51,8 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setTypeface(typeface);
         btnRegistro.setTypeface(typeface);
         pbLogin.setTypeface(typeface);
+
+        btnRegistro.setButtonColor(getResources().getColor(R.color.fbutton_secondary_color));
 
         firebaseAuth = FirebaseAuth.getInstance();
 

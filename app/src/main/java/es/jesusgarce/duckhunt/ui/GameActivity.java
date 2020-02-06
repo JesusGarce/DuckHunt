@@ -9,6 +9,7 @@ import es.jesusgarce.duckhunt.R;
 import es.jesusgarce.duckhunt.common.Constants;
 import es.jesusgarce.duckhunt.models.Duck;
 import es.jesusgarce.duckhunt.models.User;
+import info.hoang8f.widget.FButton;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -51,6 +52,7 @@ public class GameActivity extends AppCompatActivity {
     TextView bestScoreText;
     TextView counterTextNew;
     ImageView btnReiniciar;
+    ImageView btnClose;
 
     ConstraintLayout layout;
 
@@ -239,7 +241,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-        Button dialogReiniciar = dialog.findViewById(R.id.dialogButtonReiniciar);
+        FButton dialogReiniciar = dialog.findViewById(R.id.dialogButtonReiniciar);
         dialogReiniciar.setTypeface(typeface);
         dialogReiniciar.setOnClickListener(
                 new View.OnClickListener() {
@@ -254,7 +256,7 @@ public class GameActivity extends AppCompatActivity {
                     }
         });
 
-        Button dialogVerRanking = dialog.findViewById(R.id.dialogButtonGoHome);
+        FButton dialogVerRanking = dialog.findViewById(R.id.dialogButtonGoHome);
         dialogVerRanking.setTypeface(typeface);
         dialogVerRanking.setOnClickListener(
                 new View.OnClickListener() {
@@ -296,6 +298,7 @@ public class GameActivity extends AppCompatActivity {
         counterTextNew = findViewById(R.id.counterTextNew);
         layout = findViewById(R.id.layoutGame);
         btnReiniciar = findViewById(R.id.btnReiniciar);
+        btnClose = findViewById(R.id.btnFinish);
 
         Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
         counterText.setTypeface(typeface);
@@ -320,6 +323,59 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialogClose();
+            }
+        });
+
+    }
+
+    private void showDialogClose(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_stop);
+        dialog.setCancelable(false);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
+
+        TextView textTitle = dialog.findViewById(R.id.textCloseGameTitle);
+        TextView textSubtitle = dialog.findViewById(R.id.textCloseGameSubtitle);
+        textTitle.setTypeface(typeface);
+        textSubtitle.setTypeface(typeface);
+
+        FButton btnRestart = dialog.findViewById(R.id.dialogButtonClose);
+        btnRestart.setTypeface(typeface);
+        btnRestart.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        counter = 0;
+                        counterText.setText("0");
+                        gameOver = false;
+                        generatorDucksTimer.cancel();
+                        deleteDucks();
+                        generateDucks();
+                        timer.cancel();
+                        initCountDown();
+                        dialog.dismiss();
+                        Intent i = new Intent(GameActivity.this, MenuActivity.class);
+                        finish();
+                        startActivity(i);
+                    }
+                });
+
+        FButton btnCancelar = dialog.findViewById(R.id.dialogButtonCancelClose);
+        btnCancelar.setTypeface(typeface);
+        btnCancelar.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog.show();
     }
 
     private void showDialogRestart(){
@@ -334,7 +390,7 @@ public class GameActivity extends AppCompatActivity {
         textTitle.setTypeface(typeface);
         textSubtitle.setTypeface(typeface);
 
-        Button btnRestart = dialog.findViewById(R.id.dialogButtonRestart);
+        FButton btnRestart = dialog.findViewById(R.id.dialogButtonRestart);
         btnRestart.setTypeface(typeface);
         btnRestart.setOnClickListener(
                 new View.OnClickListener() {
@@ -352,7 +408,7 @@ public class GameActivity extends AppCompatActivity {
                     }
                 });
 
-        Button btnCancelar = dialog.findViewById(R.id.dialogButtonCancel);
+        FButton btnCancelar = dialog.findViewById(R.id.dialogButtonCancel);
         btnCancelar.setTypeface(typeface);
         btnCancelar.setOnClickListener(
                 new View.OnClickListener() {
