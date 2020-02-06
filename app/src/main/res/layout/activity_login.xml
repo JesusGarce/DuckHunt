@@ -62,16 +62,37 @@
                 android:textSize="24sp"
                 android:inputType="textEmailAddress" />
 
-            <EditText
-                android:id="@+id/editPassword"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editPassword"
+                android:layout_width="0dp"
+                android:layout_weight="6"
+                android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:inputType="textPassword" />
+
+                <info.hoang8f.widget.FButton
+                    android:id="@+id/btnResetPassword"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="?"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/white"
+                    fbutton:buttonColor="@color/fbutton_default_color"
+                    fbutton:shadowColor="@color/fbutton_default_shadow_color"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="5dp"
+                    fbutton:cornerRadius="5dp"/>
+            </LinearLayout>
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/buttonRegistro"

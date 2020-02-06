@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import es.jesusgarce.duckhunt.R;
 import info.hoang8f.widget.FButton;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -26,7 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
-    private FButton btnLogin, btnRegistro;
+    private FButton btnLogin, btnRegistro, btnResetPassword;
     private ScrollView formLogin;
     private TextView pbLogin;
     FirebaseAuth firebaseAuth;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.editPassword);
         btnLogin = findViewById(R.id.buttonRegistro);
         btnRegistro = findViewById(R.id.buttonRegistroLogin);
+        btnResetPassword = findViewById(R.id.btnResetPassword);
         formLogin = findViewById(R.id.formLogin);
         pbLogin = findViewById(R.id.loadingTextLogin);
 
@@ -50,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         etPassword.setTypeface(typeface);
         btnLogin.setTypeface(typeface);
         btnRegistro.setTypeface(typeface);
+        btnResetPassword.setTypeface(typeface);
         pbLogin.setTypeface(typeface);
 
         btnRegistro.setButtonColor(getResources().getColor(R.color.fbutton_secondary_color));
@@ -87,6 +90,61 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        btnResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialogResetPassword();
+            }
+        });
+
+    }
+
+    private void showDialogResetPassword(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_reset_password);
+        dialog.setCancelable(false);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
+
+        TextView textTitle = dialog.findViewById(R.id.textResetPasswordTitle);
+        EditText emailResetPassword = dialog.findViewById(R.id.resetPasswordEmail);
+        textTitle.setTypeface(typeface);
+        emailResetPassword.setTypeface(typeface);
+
+        FButton btnReset = dialog.findViewById(R.id.dialogResetPassword);
+        btnReset.setTypeface(typeface);
+        btnReset.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String email = emailResetPassword.getText().toString();
+
+                        firebaseAuth.sendPasswordResetEmail(email)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(dialog.getContext(), "Check your e-mail to reset your password", Toast.LENGTH_LONG).show();
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(dialog.getContext(), "Ups! Your email isn't correct. Try again", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                    }
+                });
+
+        FButton btnCancelar = dialog.findViewById(R.id.dialogResetCancel);
+        btnCancelar.setTypeface(typeface);
+        btnCancelar.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+        dialog.show();
     }
 
     private void loginUser() {

@@ -67,8 +67,6 @@ public class MenuActivity extends AppCompatActivity {
         btnRanking = findViewById(R.id.buttonRanking);
         btnLogout = findViewById(R.id.buttonLogout);
 
-        btnLogout.setButtonColor(getResources().getColor(R.color.fbutton_secondary_color));
-
         Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
         inputNick.setTypeface(typeface);
         txtGamesPlayed.setTypeface(typeface);

@@ -71,40 +71,73 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txtBestScore"
+
+                <RelativeLayout
+                    android:id="@+id/firstFrame"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginRight="10dp"
+                    android:layout_weight="2">
+
+                    <ImageView
+                        android:id="@+id/firstImageFrame"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/frame" />
+
+                    <TextView
+                        android:id="@+id/txtBestScore"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignLeft="@id/firstImageFrame"
+                        android:layout_alignTop="@id/firstImageFrame"
+                        android:layout_alignRight="@id/firstImageFrame"
+                        android:layout_alignBottom="@id/firstImageFrame"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:text="Best Score: 0"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#FFFFFF"
+                        android:textColorLink="#FFFFFF"
+                        android:textSize="20sp" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/secondFrame"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="2">
+
+                <ImageView
+                    android:id="@+id/secondImageFrame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/frame" />
+
+                <TextView
+                    android:id="@+id/txtGamesPlayed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignLeft="@id/secondImageFrame"
+                    android:layout_alignTop="@id/secondImageFrame"
+                    android:layout_alignRight="@id/secondImageFrame"
+                    android:layout_alignBottom="@id/secondImageFrame"
                     android:layout_weight="2"
-                    android:background="@color/colorDark"
-                    android:text="Best Score: 0"
-                    android:textAlignment="center"
+                    android:text="Games Played: 0"
+                    android:gravity="center"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#FFFFFF"
                     android:textColorLink="#FFFFFF"
                     android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/txtGamesPlayed"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="2"
-                    android:background="@color/colorDark"
-                    android:text="Games Played: 0"
-                    android:textAlignment="center"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#FFFFFF"
-                    android:textColorLink="#FFFFFF"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/txtNick"
-                    app:layout_constraintTop_toBottomOf="@+id/txtNick" />
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -112,17 +145,17 @@
                 android:id="@+id/buttonStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="5dp"
                 android:text="Play Game"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 fbutton:buttonColor="@color/fbutton_default_color"
+                fbutton:cornerRadius="5dp"
                 fbutton:shadowColor="@color/fbutton_default_shadow_color"
                 fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp"
-                fbutton:cornerRadius="5dp"/>
+                fbutton:shadowHeight="5dp" />
 
             <info.hoang8f.widget.FButton
                 android:id="@+id/buttonRanking"
@@ -150,8 +183,8 @@
                 android:text="Log Out"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                fbutton:buttonColor="@color/fbutton_secondary_color"
-                fbutton:shadowColor="@color/fbutton_secondary_shadow_color"
+                fbutton:buttonColor="@color/fbutton_default_color"
+                fbutton:shadowColor="@color/fbutton_default_shadow_color"
                 fbutton:shadowEnabled="true"
                 fbutton:shadowHeight="5dp"
                 fbutton:cornerRadius="5dp"/>
