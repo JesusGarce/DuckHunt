@@ -17,6 +17,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +36,7 @@ public class RegistroActivity extends AppCompatActivity {
     FirebaseFirestore db;
     TextView loadingRegistro;
     ScrollView formRegistro;
+    private AdView mAdView;
 
     String name, email, password;
 
@@ -58,6 +62,11 @@ public class RegistroActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+        MobileAds.initialize(this, "ca-app-pub-3409312019014737/8093290780");
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         changeRegistroFormVisibility(true);
         events();

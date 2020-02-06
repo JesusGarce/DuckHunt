@@ -31,6 +31,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,10 +81,17 @@ public class GameActivity extends AppCompatActivity {
     CountDownTimer generatorDucksTimer;
     CountDownTimer timer;
 
+    InterstitialAd mInterstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        MobileAds.initialize(this, "ca-app-pub-3409312019014737~4078379379");
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3409312019014737/8093290780");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -197,6 +207,13 @@ public class GameActivity extends AppCompatActivity {
                 timeText.setText("0s");
                 gameOver = true;
                 saveResultOnFirestore();
+
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                }
+
                 showDialogGameOver();
             }
         };

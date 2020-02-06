@@ -56,7 +56,7 @@
                 android:id="@+id/inputNick"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:hint="Username"
                 android:inputType="text"
                 android:textAlignment="center"
@@ -70,7 +70,7 @@
                 android:id="@+id/inputEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:hint="E-mail"
                 android:inputType="textEmailAddress"
                 android:textAlignment="center"
@@ -84,7 +84,7 @@
                 android:id="@+id/inputPass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:textAlignment="center"
@@ -95,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="5dp"
                 android:text="Sign In"
                 android:textColor="@android:color/white"
@@ -109,5 +109,14 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        fbutton:adSize="LARGE_BANNER"
+        fbutton:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
