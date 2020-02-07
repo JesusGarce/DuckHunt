@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -73,6 +74,8 @@ public class GameActivity extends AppCompatActivity {
     String uid;
     String bestScore;
     FirebaseAuth firebaseAuth;
+    String level;
+    int levelInterval;
 
     LinkedList<Duck> ducks;
     Duck duck;
@@ -100,22 +103,48 @@ public class GameActivity extends AppCompatActivity {
 
         initScreen();
         initViewComponents();
+        initInterval();
         generateDucks();
         initCountDown();
         chargeUser();
+
+        ConstraintLayout activityGame = findViewById(R.id.layoutGame);
+        activityGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                counter--;
+                counterText.setText(String.valueOf(counter));
+                counterTextNew.setText("-" + String.valueOf(1));
+                counterTextNew.setVisibility(View.VISIBLE);
+
+                new Handler().postDelayed(() -> {
+                    counterTextNew.setVisibility(View.INVISIBLE);
+                }, 100);
+            }
+        });
+    }
+
+    private void initInterval() {
+        if (level.equals(Constants.LEVEL_HARD))
+            levelInterval = Constants.LEVEL_HARD_DUCKS_APPEAR_INTERVAL;
+        else if (level.equals(Constants.LEVEL_EASY))
+            levelInterval = Constants.LEVEL_EASY_DUCKS_APPEAR_INTERVAL;
+        else
+            levelInterval = Constants.LEVEL_MEDIUM_DUCKS_APPEAR_INTERVAL;
     }
 
     private void generateDucks() {
         ducks = new LinkedList<>();
         duckId = 0;
 
-        generatorDucksTimer = new CountDownTimer(60000, 823){
+        generatorDucksTimer = new CountDownTimer(60000, levelInterval){
 
             @Override
             public void onTick(long l) {
-                duck = new Duck(duckId);
+                duck = new Duck(duckId, level);
                 duck.generateImageView(createDuckView(duck), widthScreen, heightScreen);
                 duckId++;
+                Log.i("JGS", "NEW DUCK! DUCK ID: "+duckId);
                 duck.getView().setOnClickListener(new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -328,6 +357,7 @@ public class GameActivity extends AppCompatActivity {
         nick = extras.getString(Constants.EXTRA_NICK);
         idUser = extras.getString(Constants.EXTRA_ID);
         bestScore = extras.getString(Constants.EXTRA_BEST_SCORE);
+        level = extras.getString(Constants.LEVEL);
 
         nickText.setText(nick);
         bestScoreText.setText("Best Score: "+bestScore);
@@ -361,9 +391,9 @@ public class GameActivity extends AppCompatActivity {
         textTitle.setTypeface(typeface);
         textSubtitle.setTypeface(typeface);
 
-        FButton btnRestart = dialog.findViewById(R.id.dialogButtonClose);
-        btnRestart.setTypeface(typeface);
-        btnRestart.setOnClickListener(
+        FButton btnClose = dialog.findViewById(R.id.dialogButtonClose);
+        btnClose.setTypeface(typeface);
+        btnClose.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -372,9 +402,7 @@ public class GameActivity extends AppCompatActivity {
                         gameOver = false;
                         generatorDucksTimer.cancel();
                         deleteDucks();
-                        generateDucks();
                         timer.cancel();
-                        initCountDown();
                         dialog.dismiss();
                         Intent i = new Intent(GameActivity.this, MenuActivity.class);
                         finish();

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 
 import java.util.Random;
 
+import es.jesusgarce.duckhunt.common.Constants;
+
 public class Duck {
     private int id;
     private int type;
@@ -18,9 +20,13 @@ public class Duck {
     private int posY;
     private boolean isLeft;
     private ImageView view;
+    private String level;
+    private int levelVelocity;
 
-    public Duck(int id) {
+    public Duck(int id, String level) {
         this.id = id;
+        this.level = level;
+        initVelocity();
         generateSide();
         generateType();
     }
@@ -78,6 +84,15 @@ public class Duck {
         generateAnimation(maxWidthScreen, maxHeightScreen);
     }
 
+    private void initVelocity() {
+        if (level.equals(Constants.LEVEL_HARD))
+            levelVelocity = Constants.LEVEL_HARD_DUCKS_VELOCITY_INTERVAL;
+        else if (level.equals(Constants.LEVEL_MEDIUM))
+            levelVelocity = Constants.LEVEL_MEDIUM_DUCKS_VELOCITY_INTERVAL;
+        else
+            levelVelocity = Constants.LEVEL_EASY_DUCKS_VELOCITY_INTERVAL;
+    }
+
     private void generateType() {
         Random random = new Random();
         type = random.nextInt((4 - 1) + 1);
@@ -103,7 +118,7 @@ public class Duck {
 
         animatorSet = new AnimatorSet();
         animatorSet.playTogether(animationX, animationY);
-        animatorSet.setDuration(1613);
+        animatorSet.setDuration(levelVelocity);
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {

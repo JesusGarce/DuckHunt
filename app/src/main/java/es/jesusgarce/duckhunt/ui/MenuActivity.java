@@ -50,6 +50,7 @@ public class MenuActivity extends AppCompatActivity {
     String uid;
     User player;
     ScrollView menuView;
+    String level;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,20 +90,7 @@ public class MenuActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                nick = inputNick.getText().toString();
-
-                if (nick.isEmpty()){
-                    inputNick.setError("You must write a nickname");
-                } else if (nick.length() < 3) {
-                    inputNick.setError("It's too short, you must use more than 3 characters");
-                } else if (nick.length() > 15) {
-                    inputNick.setError("It's too long, you must use less than 15 characters");
-                }
-
-                else {
-                    loadingDialog.show();
-                    startGame();
-                }
+                showChooseLevelDialog();
             }
         });
 
@@ -123,6 +111,56 @@ public class MenuActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void showChooseLevelDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_choose_level);
+        dialog.setCancelable(false);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "starseed.ttf");
+
+        TextView textSelectLevel = dialog.findViewById(R.id.textChooseLevel);
+        FButton levelHard = dialog.findViewById(R.id.dialogLevelHard);
+        FButton levelMedium = dialog.findViewById(R.id.dialogLevelMedium);
+        FButton levelEasy = dialog.findViewById(R.id.dialogLevelEasy);
+
+        textSelectLevel.setTypeface(typeface);
+        levelHard.setTypeface(typeface);
+        levelMedium.setTypeface(typeface);
+        levelEasy.setTypeface(typeface);
+
+        levelHard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                level = Constants.LEVEL_HARD;
+                dialog.dismiss();
+                loadingDialog.show();
+                startGame();
+            }
+        });
+
+        levelMedium.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                level = Constants.LEVEL_MEDIUM;
+                dialog.dismiss();
+                loadingDialog.show();
+                startGame();
+            }
+        });
+
+        levelEasy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                level = Constants.LEVEL_EASY;
+                dialog.dismiss();
+                loadingDialog.show();
+                startGame();
+            }
+        });
+
+        dialog.show();
     }
 
     private void chargeUser() {
@@ -164,6 +202,7 @@ public class MenuActivity extends AppCompatActivity {
         i.putExtra(Constants.EXTRA_NICK, player.getNick());
         i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucks()));
         i.putExtra(Constants.EXTRA_ID, firebaseAuth.getUid());
+        i.putExtra(Constants.LEVEL, level);
         loadingDialog.dismiss();
         startActivity(i);
     }

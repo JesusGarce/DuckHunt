@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textChooseLevel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:text="Choose level"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:textSize="40sp"
+        />
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/dialogLevelHard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Hard"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        fbutton:buttonColor="@color/fbutton_default_color"
+        fbutton:shadowColor="@color/fbutton_default_shadow_color"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="5dp"
+        fbutton:cornerRadius="5dp"/>
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/dialogLevelMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Medium"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        fbutton:buttonColor="@color/fbutton_default_color"
+        fbutton:shadowColor="@color/fbutton_default_shadow_color"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="5dp"
+        fbutton:cornerRadius="5dp"/>
+
+    <info.hoang8f.widget.FButton
+        android:id="@+id/dialogLevelEasy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Easy"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        fbutton:buttonColor="@color/fbutton_default_color"
+        fbutton:shadowColor="@color/fbutton_default_shadow_color"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="5dp"
+        fbutton:cornerRadius="5dp"/>
+
+</LinearLayout>

@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/back_blue"
     android:id="@+id/layoutGame"
+    android:clickable="true"
     android:padding="16dp"
     tools:context=".ui.GameActivity">
 
