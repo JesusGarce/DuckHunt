@@ -13,7 +13,7 @@
         android:id="@+id/logoView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="0dp"
         android:padding="16dp"
         android:src="@drawable/title"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -94,10 +94,12 @@
                     fbutton:cornerRadius="5dp"/>
             </LinearLayout>
 
+
             <info.hoang8f.widget.FButton
                 android:id="@+id/buttonRegistro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="5dp"
@@ -110,12 +112,39 @@
                 fbutton:shadowHeight="5dp"
                 fbutton:cornerRadius="5dp"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/login_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#4267B2"
+                    android:textSize="20sp" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"/>
+
+            </LinearLayout>
+
             <info.hoang8f.widget.FButton
                 android:id="@+id/buttonRegistroLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="5dp"
                 android:padding="16dp"
                 android:text="Sign in"
@@ -138,7 +167,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        fbutton:adSize="LARGE_BANNER"
+        fbutton:adSize="BANNER"
         fbutton:adUnitId="ca-app-pub-3409312019014737/8093290780"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

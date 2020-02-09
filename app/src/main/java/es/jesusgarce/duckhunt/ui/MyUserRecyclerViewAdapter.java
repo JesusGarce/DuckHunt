@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import es.jesusgarce.duckhunt.R;
+import es.jesusgarce.duckhunt.common.Constants;
 import es.jesusgarce.duckhunt.models.User;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.List;
 public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecyclerViewAdapter.ViewHolder> {
 
     private final List<User> mValues;
+    String level;
 
-    public MyUserRecyclerViewAdapter(List<User> items) {
+    public MyUserRecyclerViewAdapter(List<User> items, String level) {
         mValues = items;
+        this.level = level;
     }
 
     @Override
@@ -33,7 +36,13 @@ public class MyUserRecyclerViewAdapter extends RecyclerView.Adapter<MyUserRecycl
         holder.mItem = mValues.get(position);
         int pos = position + 1;
         holder.textPosition.setText(pos + "º");
-        holder.textDucks.setText(String.valueOf(mValues.get(position).getDucks()));
+        if (level.equals(Constants.LEVEL_HARD_DATABASE))
+            holder.textDucks.setText(String.valueOf(mValues.get(position).getDucksHard()));
+        else if (level.equals(Constants.LEVEL_EASY_DATABASE))
+            holder.textDucks.setText(String.valueOf(mValues.get(position).getDucksEasy()));
+        else
+            holder.textDucks.setText(String.valueOf(mValues.get(position).getDucksMedium()));
+
         holder.textNick.setText(mValues.get(position).getNick());
     }
 

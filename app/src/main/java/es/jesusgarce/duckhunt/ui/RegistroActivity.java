@@ -129,7 +129,7 @@ public class RegistroActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user) {
         if (user != null){
 
-            User newUser = new User(name, 0, 0);
+            User newUser = new User(name, 0, 0, 0, 0);
 
             db.collection("users")
                     .document(user.getUid())

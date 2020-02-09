@@ -20,6 +20,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
@@ -61,6 +63,7 @@ public class MenuActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
+        FacebookSdk.sdkInitialize(getApplicationContext());
         user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
         menuView = findViewById(R.id.menuScroll);
@@ -106,12 +109,16 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 firebaseAuth.signOut();
+                LoginManager.getInstance().logOut();
                 Intent i = new Intent(MenuActivity.this, LoginActivity.class);
                 startActivity(i);
                 finish();
             }
         });
     }
+
+    @Override
+    public void onBackPressed() { }
 
     private void showChooseLevelDialog(){
         final Dialog dialog = new Dialog(this);
@@ -200,7 +207,22 @@ public class MenuActivity extends AppCompatActivity {
     private void startGame() {
         Intent i = new Intent(MenuActivity.this, GameActivity.class);
         i.putExtra(Constants.EXTRA_NICK, player.getNick());
-        i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucks()));
+
+        switch (level) {
+            case Constants.LEVEL_EASY:
+                i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucksEasy()));
+                break;
+            case Constants.LEVEL_MEDIUM:
+                i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucksMedium()));
+                break;
+            case Constants.LEVEL_HARD:
+                i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucksHard()));
+                break;
+            default:
+                i.putExtra(Constants.EXTRA_BEST_SCORE, String.valueOf(player.getDucks()));
+                break;
+        }
+
         i.putExtra(Constants.EXTRA_ID, firebaseAuth.getUid());
         i.putExtra(Constants.LEVEL, level);
         loadingDialog.dismiss();

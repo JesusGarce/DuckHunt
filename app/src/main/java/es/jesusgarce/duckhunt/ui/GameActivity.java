@@ -55,12 +55,14 @@ public class GameActivity extends AppCompatActivity {
     TextView timeText;
     TextView bestScoreText;
     TextView counterTextNew;
+    TextView counterTextEvent;
     ImageView btnReiniciar;
     ImageView btnClose;
 
     ConstraintLayout layout;
 
     int counter = 0;
+    int counterStreak = 0;
     int widthScreen;
     int heightScreen;
     Random random;
@@ -91,15 +93,15 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        MobileAds.initialize(this, "ca-app-pub-3409312019014737~4078379379");
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3409312019014737/8093290780");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
         db = FirebaseFirestore.getInstance();
+
+        MobileAds.initialize(this);
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3409312019014737/8093290780");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         initScreen();
         initViewComponents();
@@ -113,12 +115,16 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 counter--;
+                counterStreak = 0;
                 counterText.setText(String.valueOf(counter));
                 counterTextNew.setText("-" + String.valueOf(1));
+                counterTextEvent.setVisibility(View.VISIBLE);
+                counterTextEvent.setText("BAD SHOT!");
                 counterTextNew.setVisibility(View.VISIBLE);
 
                 new Handler().postDelayed(() -> {
                     counterTextNew.setVisibility(View.INVISIBLE);
+                    counterTextEvent.setVisibility(View.INVISIBLE);
                 }, 100);
             }
         });
@@ -144,7 +150,6 @@ public class GameActivity extends AppCompatActivity {
                 duck = new Duck(duckId, level);
                 duck.generateImageView(createDuckView(duck), widthScreen, heightScreen);
                 duckId++;
-                Log.i("JGS", "NEW DUCK! DUCK ID: "+duckId);
                 duck.getView().setOnClickListener(new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
@@ -158,13 +163,19 @@ public class GameActivity extends AppCompatActivity {
                                 counterText.setText(String.valueOf(counter));
                                 counterTextNew.setText("+" + String.valueOf(value));
                                 counterTextNew.setVisibility(View.VISIBLE);
+                                counterStreak++;
 
+                                if (counterStreak % 5 == 0){
+                                    counterTextEvent.setText(counterStreak+ " DUCK STREAK!");
+                                    counterTextEvent.setVisibility(View.VISIBLE);
+                                }
 
                                 drawHuntedDuck(duckList);
 
                                 new Handler().postDelayed(() -> {
                                     duckList.duckHunted();
                                     counterTextNew.setVisibility(View.INVISIBLE);
+                                    counterTextEvent.setVisibility(View.INVISIBLE);
                                     layout.removeView(duckList.getView());
                                     ducks.remove(duckList);
                                 }, 100);
@@ -220,7 +231,6 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(GameActivity.this, "Sorry, you can't do that, you have to finish the game",Toast.LENGTH_SHORT).show();
     }
 
     private void initCountDown() {
@@ -228,14 +238,16 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onTick(long l) {
                 long remainingSeconds = l / 1000;
-                timeText.setText(remainingSeconds + "s");
+                if (remainingSeconds<10)
+                    timeText.setText("0:0"+remainingSeconds);
+                else
+                    timeText.setText("0:" + remainingSeconds);
             }
 
             @Override
             public void onFinish() {
-                timeText.setText("0s");
+                timeText.setText("0:00");
                 gameOver = true;
-                saveResultOnFirestore();
 
                 if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
@@ -250,12 +262,6 @@ public class GameActivity extends AppCompatActivity {
         timer.start();
     }
 
-    private void saveResultOnFirestore() {
-        db.collection("users")
-                .document(idUser)
-                .update("ducks", counter);
-
-    }
 
     private void showDialogGameOver() {
         final Dialog dialog = new Dialog(this);
@@ -269,7 +275,12 @@ public class GameActivity extends AppCompatActivity {
 
         TextView textGameOver = dialog.findViewById(R.id.textGameOver);
         TextView textResult = dialog.findViewById(R.id.textResultGO);
-        textResult.setText("You have hunted "+counter + " ducks");
+
+        if (counter > 0)
+            textResult.setText("You have got "+counter + " points.");
+        else
+            textResult.setText("All ducks fly freely. Try again.");
+
         textResult.setTypeface(typeface);
         textGameOver.setTypeface(typeface);
 
@@ -279,7 +290,7 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hi guys! I've got "+counter+ " ducks, can you be better than me? Try to improve that. Play Duck Hunt! ");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hi guys! I've got "+counter+ " points, can you be better than me? Try to improve that. Play Duck Hunt! ");
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
@@ -342,6 +353,7 @@ public class GameActivity extends AppCompatActivity {
         timeText = findViewById(R.id.timeText);
         bestScoreText = findViewById(R.id.txtBestScoreGame);
         counterTextNew = findViewById(R.id.counterTextNew);
+        counterTextEvent = findViewById(R.id.counterTextEvent);
         layout = findViewById(R.id.layoutGame);
         btnReiniciar = findViewById(R.id.btnReiniciar);
         btnClose = findViewById(R.id.btnFinish);
@@ -352,6 +364,7 @@ public class GameActivity extends AppCompatActivity {
         nickText.setTypeface(typeface);
         bestScoreText.setTypeface(typeface);
         counterTextNew.setTypeface(typeface);
+        counterTextEvent.setTypeface(typeface);
 
         Bundle extras = getIntent().getExtras();
         nick = extras.getString(Constants.EXTRA_NICK);
@@ -362,6 +375,7 @@ public class GameActivity extends AppCompatActivity {
         nickText.setText(nick);
         bestScoreText.setText("Best Score: "+bestScore);
         counterTextNew.setVisibility(View.INVISIBLE);
+        counterTextEvent.setVisibility(View.INVISIBLE);
 
         btnReiniciar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -404,6 +418,13 @@ public class GameActivity extends AppCompatActivity {
                         deleteDucks();
                         timer.cancel();
                         dialog.dismiss();
+
+                        if (mInterstitialAd.isLoaded()) {
+                            mInterstitialAd.show();
+                        } else {
+                            Log.d("TAG", "The interstitial wasn't loaded yet.");
+                        }
+
                         Intent i = new Intent(GameActivity.this, MenuActivity.class);
                         finish();
                         startActivity(i);
@@ -479,8 +500,16 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void actualizarPuntuacion(int puntosConseguidos) {
-        if (player.getDucks() < puntosConseguidos)
+        if (player.getDucks() < puntosConseguidos) {
             player.setDucks(puntosConseguidos);
+        }
+
+        if (level.equals(Constants.LEVEL_HARD) && player.getDucksHard() < puntosConseguidos)
+            player.setDucksHard(puntosConseguidos);
+        else if (level.equals(Constants.LEVEL_MEDIUM) && player.getDucksMedium() < puntosConseguidos)
+            player.setDucksMedium(puntosConseguidos);
+        else if (level.equals(Constants.LEVEL_EASY) && player.getDucksEasy() < puntosConseguidos)
+            player.setDucksEasy(puntosConseguidos);
 
         player.setGamesPlayed(player.getGamesPlayed()+1);
 

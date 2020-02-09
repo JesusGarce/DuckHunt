@@ -15,4 +15,7 @@ public class Constants {
     public static int LEVEL_HARD_DUCKS_VELOCITY_INTERVAL = 1113;
     public static int LEVEL_MEDIUM_DUCKS_VELOCITY_INTERVAL = 1613;
     public static int LEVEL_EASY_DUCKS_VELOCITY_INTERVAL = 2113;
+    public static final String LEVEL_HARD_DATABASE = "ducksHard";
+    public static final String LEVEL_MEDIUM_DATABASE = "ducksMedium";
+    public static final String LEVEL_EASY_DATABASE = "ducksEasy";
 }

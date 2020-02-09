@@ -39,13 +39,15 @@ public class UserRankingFragment extends Fragment {
     MyUserRecyclerViewAdapter adapter;
     FirebaseFirestore db;
     RecyclerView recyclerView;
+    String level;
 
-    public UserRankingFragment() {
+    public UserRankingFragment(String level) {
+        this.level = level;
     }
 
     @SuppressWarnings("unused")
     public static UserRankingFragment newInstance(int columnCount) {
-        UserRankingFragment fragment = new UserRankingFragment();
+        UserRankingFragment fragment = new UserRankingFragment("");
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -79,7 +81,7 @@ public class UserRankingFragment extends Fragment {
             }
 
             db.collection("users")
-                    .orderBy("ducks", Query.Direction.DESCENDING)
+                    .orderBy(level, Query.Direction.DESCENDING)
                     .limit(10)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -90,7 +92,7 @@ public class UserRankingFragment extends Fragment {
                                 User user = document.toObject(User.class);
                                 userList.add(user);
                             }
-                            adapter = new MyUserRecyclerViewAdapter(userList);
+                            adapter = new MyUserRecyclerViewAdapter(userList, level);
                             recyclerView.setAdapter(adapter);
                         }
                     });

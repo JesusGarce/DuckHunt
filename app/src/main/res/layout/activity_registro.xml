@@ -12,7 +12,6 @@
         android:id="@+id/logoView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:padding="16dp"
         android:src="@drawable/title"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -116,7 +115,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        fbutton:adSize="LARGE_BANNER"
+        fbutton:adSize="BANNER"
         fbutton:adUnitId="ca-app-pub-3409312019014737/8093290780"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

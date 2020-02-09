@@ -50,6 +50,20 @@
         app:layout_constraintVertical_bias="0.0" />
 
 
+    <TextView
+        android:id="@+id/counterTextEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Event"
+        android:textColor="@color/colorPrimaryOpacity"
+        android:gravity="center"
+        android:textSize="50sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
     <RelativeLayout
         android:id="@+id/nickFrame"
         android:layout_width="150dp"
@@ -72,7 +86,7 @@
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
+            android:textSize="12sp"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +102,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="60s"
+        android:text="1:00"
         android:textColor="#252525"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/timeView"
